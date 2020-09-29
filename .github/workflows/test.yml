@@ -10,7 +10,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      tf_version: 0.13.1
+      tf_version: 0.13.0
     steps:
     - uses: actions/checkout@v2
     - uses: aws-actions/configure-aws-credentials@v1
@@ -27,7 +27,7 @@ jobs:
       working-directory: __tests__
     - uses: ./
       with:
-        working-directory: __tests__
+        working-directory: ./__tests__
         terraform-plan-file: test-plan.tfplan
         divvycloud-username: ${{ secrets.DIVVYCLOUD_USERNAME }}
         divvycloud-password: ${{ secrets.DIVVYCLOUD_PASSWORD}}
