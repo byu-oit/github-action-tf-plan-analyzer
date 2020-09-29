@@ -95,7 +95,7 @@ async function run () {
 
     // DivvyCloud Auth token
     const authToken = await getAuth(username, password, divvyUrl + '/v2/public/user/login')
-    console.log(authToken)
+
     // Send JSON plan to Divvycloud
     const [statusCode, scanResult] = await getScan(authToken, author, scanName, json, divvyUrl + '/v3/iac/scan')
 
