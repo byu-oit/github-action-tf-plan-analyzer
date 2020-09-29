@@ -21,9 +21,3 @@ inputs:
 runs:
   using: 'node12'
   main: 'dist/index.js'
-  args:
-    - ${{ inputs.terraform-plan-file }}
-    - ${{ inputs.working-directory }}
-    - ${{ inputs.divvycloud-password }}
-    - ${{ inputs.divvycloud-username }}
-    - ${{ inputs.divvycloud-URL }}
