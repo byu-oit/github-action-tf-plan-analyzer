@@ -70,6 +70,7 @@ async function getScan (authToken, author, scanName, json, url) {
         'X-Auth-Token': authToken
       }
     })
+    console.log(response)
     return [response.statusCode, response.body]
   } catch (e) {
     return '?'
