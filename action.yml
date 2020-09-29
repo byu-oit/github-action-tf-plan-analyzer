@@ -1,13 +1,29 @@
-name: 'Wait'
-description: 'Wait a designated number of milliseconds'
+name: 'Terraform Plan Analyzer'
+description: 'Analyzes Terraform Plan with Divvycloud'
+author: 'Brigham Young University'
 inputs:
-  milliseconds:  # id of input
-    description: 'number of milliseconds to wait'
+  terraform-plan-file:
     required: true
-    default: '1000'
-outputs:
-  time: # output will be available to future steps
-    description: 'The message to output'
+    description: File name of the terraform plan
+  working-directory:
+    required: false
+    description: Directory of the terraform configuration
+    default: .
+  divvycloud-password:
+    required: true
+    description: Password for Divvycloud
+  divvycloud-username:
+    required: true
+    description: Username for Divvycloud
+  divvycloud-URL:
+    required: true
+    description: URL for Divvycloud
 runs:
   using: 'node12'
   main: 'dist/index.js'
+  args:
+    - ${{ inputs.terraform-plan-file }}
+    - ${{ inputs.working-directory }}
+    - ${{ inputs.divvycloud-password }}
+    - ${{ inputs.divvycloud-username }}
+    - ${{ inputs.divvycloud-URL }}

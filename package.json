@@ -1,31 +1,31 @@
 {
-  "name": "javascript-action",
+  "name": "terraform-plan-analyzer",
   "version": "1.0.0",
-  "description": "JavaScript Action Template",
+  "description": "Terraform Plan Analyzer",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint .",
-    "prepare": "ncc build index.js -o dist --source-map --license licenses.txt",
-    "test": "jest",
-    "all": "npm run lint && npm run prepare && npm run test"
+    "lint": "npx standard index.js",
+    "package": "npx ncc build index.js -m -o dist"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/javascript-action.git"
+    "url": "git+https://github.com/byu-oit/github-action-tf-plan-analyzer"
   },
   "keywords": [
     "GitHub",
     "Actions",
     "JavaScript"
   ],
-  "author": "",
+  "author": "Brigham Young University",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/actions/javascript-action/issues"
+    "url": "hhttps://github.com/byu-oit/github-action-tf-plan-analyzer/issues"
   },
-  "homepage": "https://github.com/actions/javascript-action#readme",
+  "homepage": "https://github.com/byu-oit/github-action-tf-plan-analyzer#readme",
   "dependencies": {
-    "@actions/core": "^1.2.5"
+    "@actions/core": "^1.2.5",
+    "@actions/exec": "^1.0.4",
+    "request-promise": "^4.2.6"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.24.0",
