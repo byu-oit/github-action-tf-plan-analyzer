@@ -1,9 +1,8 @@
-const core = require('@actions/core');
-const exec = require('@actions/exec');
+const core = require('@actions/core')
+const exec = require('@actions/exec')
 const request = require('request-promise')
 
-
-async function jsonFromPlan(workDir, planFileName) {
+async function jsonFromPlan (workDir, planFileName) {
   // run terraform show -json to parse the plan into a json string
   let output = ''
   const options = {
@@ -40,11 +39,11 @@ async function getAuth (username, password, url) {
     const response = await request({
       method: 'POST',
       uri: url,
-      body: { 'username': username, 'password': password },
+      body: { username: username, password: password },
       json: true,
       headers: { 'Content-Type': 'application/json' }
     })
-    return response['session_id'] || '?'
+    return response.session_id || '?'
   } catch (e) {
     console.log(e)
     return '?'
@@ -56,64 +55,63 @@ async function getScan (authToken, author, scanName, json, url) {
     const response = await request({
       method: 'POST',
       uri: url,
-      body: { 'scan_name': scanName,
-              'author_name': author, 
-              'scan_template': json,
-              'config_name': 'Test Scan',
-              'iac_provider': 'terraform' },
+      body: {
+        scan_name: scanName,
+        author_name: author,
+        scan_template: json,
+        config_name: 'Test Scan',
+        iac_provider: 'terraform'
+      },
       json: true,
       resolveWithFullResponse: true,
-      headers: { 'Content-Type': 'application/json;charset=UTF-8',
-                 'Accept': 'application/json',
-                 'X-Auth-Token': authToken }
+      headers: {
+        'Content-Type': 'application/json;charset=UTF-8',
+        Accept: 'application/json',
+        'X-Auth-Token': authToken
+      }
     })
-    return [response['statusCode'], response['body']]
+    return [response.statusCode, response.body]
   } catch (e) {
     return '?'
   }
 }
 
 // most @actions toolkit packages have async methods
-async function run() {
+async function run () {
   try {
-
     // Workflow Inputs
-    const planFileName = getInput('terraform-plan-file', { required: true })
-    const workDir = getInput('working-directory', { required: true })
-    const username = getInput('divvycloud-username', { required: true })
-    const password = getInput('divvycloud-password', { required: true })
-    const divvyUrl = getInput('divvycloud-URL', { required: true })
+    const planFileName = core.getInput('terraform-plan-file', { required: true })
+    const workDir = core.getInput('working-directory', { required: true })
+    const username = core.getInput('divvycloud-username', { required: true })
+    const password = core.getInput('divvycloud-password', { required: true })
+    const divvyUrl = core.getInput('divvycloud-URL', { required: true })
 
     // Enviornment variables
     const scanName = process.env.GITHUB_REPO + '.' + process.env.GITHUB_RUN_ID + '.' + process.env.GITHUB_RUN_NUMBER
     const author = process.env.ACTOR
 
     // Get Terraform plan
-    let json = await jsonFromPlan(workDir, planFileName);
-    
+    const json = await jsonFromPlan(workDir, planFileName)
+
     // DivvyCloud Auth token
-    let authToken = await getAuth(username, password, divvyUrl + '/v2/public/user/login');
+    const authToken = await getAuth(username, password, divvyUrl + '/v2/public/user/login')
     console.log(authToken)
     // Send JSON plan to Divvycloud
-    let [statusCode, scanResult] = await getScan(authToken, author, scanName, json, divvyUrl + '/v3/iac/scan');
-    
+    const [statusCode, scanResult] = await getScan(authToken, author, scanName, json, divvyUrl + '/v3/iac/scan')
+
     console.log(scanResult)
-    if(statusCode == 200) {
+    if (statusCode === 200) {
       console.log('[DivvyCloud]: Scan completed successfully.  All insights have passed.')
-    }
-    else if (statusCode == 202) {
+    } else if (statusCode === 202) {
       console.log('[DivvyCloud]: Scan completed successfully, but with warnings.  All failure-inducing insights have passed, but some warning-inducing insights did not.')
-    }
-    else if (statusCode == 406) {
-      core.setFailed('[DivvyCloud]: Scan completed, but one or more insights have failed.  Please check the DivvyCloud console for more information.');
-    }
-    else {
+    } else if (statusCode === 406) {
+      core.setFailed('[DivvyCloud]: Scan completed, but one or more insights have failed.  Please check the DivvyCloud console for more information.')
+    } else {
       console.log('[DivvyCloud]: Scan failed to return correct response. Please Contact the DivvyCloud Admins')
     }
   } catch (error) {
-    core.setFailed(error.message);
+    core.setFailed(error.message)
   }
 }
 
-
-run();
+run()
