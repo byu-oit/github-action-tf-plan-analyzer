@@ -1,4 +1,4 @@
-name: "units-test"
+name: "Test"
 on:
   pull_request:
   push:
@@ -13,6 +13,11 @@ jobs:
       tf_version: 0.13.1
     steps:
     - uses: actions/checkout@v2
+    - uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.BYU_ORG_SERVICE_KEY }}
+        aws-secret-access-key: ${{ secrets.BYU_ORG_SERVICE_SECRET }}
+        aws-region: us-west-2
     - uses: hashicorp/setup-terraform@v1
       with:
         terraform_version: ${{ env.tf_version }}
@@ -24,6 +29,6 @@ jobs:
       with:
         working-directory: __tests__
         terraform-plan-file: test-plan.tfplan
-        divvycloud-username: ${{ secrets.DIVVYCLUD_USERNAME }}
-        divvycloud-password: ${{ secrets.DIVVYCLUD_PASSWORD}}
-        divvycloud-url: ${{ secrets.DIVVYCLUD_URL }}
+        divvycloud-username: ${{ secrets.DIVVYCLOUD_USERNAME }}
+        divvycloud-password: ${{ secrets.DIVVYCLOUD_PASSWORD}}
+        divvycloud-url: ${{ secrets.DIVVYCLOUD_URL }}
