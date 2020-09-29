@@ -4,22 +4,26 @@ on:
   push:
     branches:
       - main
-      - 'releases/*'
+      - 'v*'
 
 jobs:
-  # unit tests
-  units:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - run: npm ci
-    - run: npm test
-
-  # test action works running from the graph
   test:
     runs-on: ubuntu-latest
+    env:
+      tf_version: 0.13.1
     steps:
     - uses: actions/checkout@v2
+    - uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: ${{ env.tf_version }}
+    - run: terraform init
+      working-directory: __tests__
+    - run: terraform plan -out test-plan.tfplan
+      working-directory: __tests__
     - uses: ./
       with:
-        milliseconds: 1000
+        working-directory: __tests__
+        terraform-plan-file: test-plan.tfplan
+        divvycloud-username: ${{ secrets.DIVVYCLUD_USERNAME }}
+        divvycloud-password: ${{ secrets.DIVVYCLUD_PASSWORD}}
+        divvycloud-url: ${{ secrets.DIVVYCLUD_URL }}
