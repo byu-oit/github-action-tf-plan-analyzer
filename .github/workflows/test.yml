@@ -8,27 +8,38 @@ on:
 
 jobs:
   test:
+    name: Test
     runs-on: ubuntu-latest
     env:
       tf_version: 0.13.0
     steps:
-    - uses: actions/checkout@v2
-    - uses: aws-actions/configure-aws-credentials@v1
+    - name: Check Out
+      uses: actions/checkout@v2
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.BYU_ORG_SERVICE_KEY }}
         aws-secret-access-key: ${{ secrets.BYU_ORG_SERVICE_SECRET }}
         aws-region: us-west-2
-    - uses: hashicorp/setup-terraform@v1
+
+    - name: Terraform Setup
+      uses: hashicorp/setup-terraform@v1
       with:
         terraform_version: ${{ env.tf_version }}
-    - run: terraform init
+
+    - name: Terraform Init
+      run: terraform init
       working-directory: __tests__
-    - run: terraform plan -out test-plan.tfplan
+
+    - name: Terraform Plan
+      run: terraform plan -out test-plan.tfplan
       working-directory: __tests__
-    - uses: ./
+
+    - name: Analyze Terraform Plan
+      uses: ./
       with:
         working-directory: ./__tests__
         terraform-plan-file: test-plan.tfplan
         divvycloud-username: ${{ secrets.DIVVYCLOUD_USERNAME }}
         divvycloud-password: ${{ secrets.DIVVYCLOUD_PASSWORD}}
-        divvycloud-url: ${{ secrets.DIVVYCLOUD_URL }}
