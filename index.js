@@ -52,7 +52,6 @@ async function getAuth (username, password, url) {
 }
 
 async function getScan (authToken, author, scanName, json, url) {
-  try {
     const response = await request({
       method: 'POST',
       uri: url,
@@ -65,6 +64,7 @@ async function getScan (authToken, author, scanName, json, url) {
       },
       json: true,
       resolveWithFullResponse: true,
+      simple: response,
       headers: {
         'Content-Type': 'application/json;charset=UTF-8',
         Accept: 'application/json',
@@ -74,9 +74,6 @@ async function getScan (authToken, author, scanName, json, url) {
     console.log("In function")
     console.log(response)
     return [response.statusCode, response.body]
-  } catch (e) {
-    return '?'
-  }
 }
 
 // most @actions toolkit packages have async methods
