@@ -63,7 +63,7 @@ async function getScan (authToken, author, scanName, json, url) {
       },
       json: true,
       resolveWithFullResponse: true,
-      simple: response,
+      simple: true,
       headers: {
         'Content-Type': 'application/json;charset=UTF-8',
         'Accept': 'application/json',
