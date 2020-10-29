@@ -1,5 +1,5 @@
 name: 'Terraform Plan Analyzer'
-description: 'Analyzes Terraform Plan with Divvycloud'
+description: 'Analyzes Terraform Plan with DivvyCloud'
 author: 'Brigham Young University'
 inputs:
   terraform-plan-file:
@@ -11,13 +11,10 @@ inputs:
     default: .
   divvycloud-password:
     required: true
-    description: Password for Divvycloud
+    description: Password for DivvyCloud
   divvycloud-username:
     required: true
-    description: Username for Divvycloud
-  divvycloud-URL:
-    required: true
-    description: URL for Divvycloud
+    description: Username for DivvyCloud
 runs:
   using: 'node12'
   main: 'dist/index.js'

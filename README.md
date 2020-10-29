@@ -3,11 +3,11 @@
 
 # ![BYU logo](https://www.hscripts.com/freeimages/logos/university-logos/byu/byu-logo-clipart-128.gif) github-action-tf-plan-analyzer
 
-GitHub Action to analyze the proposed terraform plan for security and compliance
+GitHub Action to analyze the proposed Terraform plan for security and compliance
 
-This action takes in the terraform plan and uses Divvycloud to analyze it for specific security and compliance rules.
+This action takes in the terraform plan and uses DivvyCloud to analyze it for specific security and compliance rules.
 
-**Note:** this action does not run `terraform plan` for you, you must pass in the plan as an input as well as the directory of the terraform configuration (where the plan and .terraform dir are located after `terraform init`).
+**Note:** This action does not run `terraform plan` for you, you must pass in the plan as an input as well as the directory of the Terraform configuration (where the plan and .terraform dir are located after `terraform init`).
 
 ## Usage
 ```yaml
@@ -25,7 +25,6 @@ jobs:
       with:
         divvycloud-username: ${{ secrets.DIVVYCLOUD_USERNAME }}
         divvycloud-password: ${{ secrets.DIVVYCLOUD_PASSWORD }}
-        divvycloud-url: "Your Base URL"
         working-directory: terraform-iac/dev/app # where your terraform files are
         terraform-plan-file: plan.tfplan # relative to working directory
 ```
