@@ -25,11 +25,10 @@ async function jsonFromPlan (workDir, planFileName) {
   // pull out any extra fluff from terraform wrapper from the hashicorp/setup-terraform action
   const json = output.match(/{.*}/)
   if (json === null) {
-    core.error('null match...')
     core.debug('** start of output **')
     core.debug(output)
     core.debug('** end of output **')
-    throw Error("output didn't match with /{.*}/ correctly")
+    throw Error('There was an error while parsing your Terraform plan. The output from "terraform show -json" didn\'t match with /{.*}/ as expected.')
   }
 
   core.debug('** matched json **')
@@ -100,7 +99,7 @@ async function run () {
     const { statusCode, body: scanResult } = await getScan(authToken, author, scanName, json)
 
     core.info(`Status Code: ${statusCode}`)
-    core.startGroup('Scan Results')
+    core.startGroup('Full Scan Results')
     core.info(JSON.stringify(scanResult, null, 2))
     core.endGroup()
 
