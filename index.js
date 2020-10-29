@@ -71,7 +71,8 @@ async function getScan (authToken, author, scanName, json, url) {
         'X-Auth-Token': authToken
       }
     })
-    console.log("In function" + response)
+    console.log("In function")
+    console.log(response)
     return [response.statusCode, response.body]
   } catch (e) {
     return '?'
@@ -101,6 +102,7 @@ async function run () {
     // Send JSON plan to Divvycloud
     const [statusCode, scanResult] = await getScan(authToken, author, scanName, json, divvyUrl + '/v3/iac/scan')
 
+    console.log("Result")
     console.log(scanResult)
     if (statusCode === 200) {
       console.log('[DivvyCloud]: Scan completed successfully.  All insights have passed.')
