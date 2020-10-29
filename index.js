@@ -51,7 +51,7 @@ async function getAuth (username, password, url) {
 }
 
 async function getScan (authToken, author, scanName, json, url) {
-    const response = await request({
+  const { statusCode, body } = await request({
       method: 'POST',
       uri: url,
       body: {
@@ -62,7 +62,6 @@ async function getScan (authToken, author, scanName, json, url) {
         iac_provider: 'terraform'
       },
       json: true,
-      resolveWithFullResponse: true,
       simple: true,
       headers: {
         'Content-Type': 'application/json;charset=UTF-8',
@@ -70,9 +69,7 @@ async function getScan (authToken, author, scanName, json, url) {
         'X-Auth-Token': authToken
       }
     })
-    console.log("In function")
-    console.log(response)
-    return [response.statusCode, response.body]
+    return [statusCode, body]
 }
 
 // most @actions toolkit packages have async methods
@@ -98,12 +95,11 @@ async function run () {
     // Send JSON plan to Divvycloud
     const [statusCode, scanResult] = await getScan(authToken, author, scanName, json, divvyUrl + '/v3/iac/scan')
 
-    console.log("Result")
-    console.log(scanResult)
+    console.log(JSON.stringify(scanResult))
     if (statusCode === 200) {
       console.log('[DivvyCloud]: Scan completed successfully.  All insights have passed.')
     } else if (statusCode === 202) {
-      console.log('[DivvyCloud]: Scan completed successfully, but with warnings.  All failure-inducing insights have passed, but some warning-inducing insights did not.')
+      core.warning('[DivvyCloud]: Scan completed successfully, but with warnings.  All failure-inducing insights have passed, but some warning-inducing insights did not.')
     } else if (statusCode === 406) {
       core.setFailed('[DivvyCloud]: Scan completed, but one or more insights have failed.  Please check the DivvyCloud console for more information.')
     } else {
