@@ -1,6 +1,5 @@
 const core = require('@actions/core')
 const exec = require('@actions/exec')
-const github = require
 const request = require('request-promise')
 
 async function jsonFromPlan (workDir, planFileName) {
