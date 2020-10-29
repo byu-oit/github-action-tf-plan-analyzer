@@ -67,7 +67,7 @@ async function getScan (authToken, author, scanName, json, url) {
       simple: response,
       headers: {
         'Content-Type': 'application/json;charset=UTF-8',
-        Accept: 'application/json',
+        'Accept': 'application/json',
         'X-Auth-Token': authToken
       }
     })
@@ -111,7 +111,7 @@ async function run () {
       console.log('[DivvyCloud]: Scan failed to return correct response. Please Contact the DivvyCloud Admins')
     }
   } catch (error) {
-    core.setFailed(error.message)
+    core.setFailed(error)
   }
 }
 
