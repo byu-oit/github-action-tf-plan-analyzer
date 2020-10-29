@@ -18,7 +18,7 @@ async function jsonFromPlan (workDir, planFileName) {
     cwd: workDir // execute the command from working directory 'dir'
   }
   core.debug(`execOptions: ${JSON.stringify(options)}`)
-  core.startGroup('Terraform Plan:')
+  core.startGroup('Plan to be Scanned')
   await exec('terraform', ['show', '-json', planFileName], options)
   core.endGroup()
 
@@ -99,11 +99,10 @@ async function run () {
     // Send JSON plan to DivvyCloud
     const { statusCode, body: scanResult } = await getScan(authToken, author, scanName, json)
 
-    core.info(`DivvyCloud status code: ${statusCode}`)
-    core.startGroup('DivvyCloud Results:')
+    core.info(`Status Code: ${statusCode}`)
+    core.startGroup('Scan Results')
     core.info(JSON.stringify(scanResult, null, 2))
     core.endGroup()
-    core.info('')
 
     if (statusCode === 200) {
       core.info('[DivvyCloud]: Scan completed successfully. All insights have passed.')

@@ -26,9 +26,9 @@ jobs:
     - run: terraform plan -out test-plan.tfplan
       working-directory: __tests__
     - uses: ./
+      name: Analyze Terraform Plan
       with:
         working-directory: ./__tests__
         terraform-plan-file: test-plan.tfplan
         divvycloud-username: ${{ secrets.DIVVYCLOUD_USERNAME }}
         divvycloud-password: ${{ secrets.DIVVYCLOUD_PASSWORD}}
-        divvycloud-url: ${{ secrets.DIVVYCLOUD_URL }}
