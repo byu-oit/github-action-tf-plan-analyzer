@@ -87,7 +87,7 @@ async function run () {
 
     // Enviornment variables
     const scanName = process.env.GITHUB_REPO + '.' + process.env.GITHUB_RUN_ID + '.' + process.env.GITHUB_RUN_NUMBER
-    const author = process.env.ACTOR
+    const author = process.env.GITHUB_ACTOR
 
     // Get Terraform plan
     const json = await jsonFromPlan(workDir, planFileName)
