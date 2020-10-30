@@ -103,6 +103,21 @@ async function run () {
     core.info(JSON.stringify(scanResult, null, 2))
     core.endGroup()
 
+    core.info('\nSummary:')
+    core.startGroup(`Passed Insights (${scanResult.details.passed_insights.length})`)
+    scanResult.details.passed_insights.forEach(insight => {
+      core.info(insight.name)
+      core.startGroup('Details')
+      core.info(`Description: ${insight.description}\nNotes: ${insight.notes}`)
+      core.endGroup()
+      core.info('Resources:')
+      insight.success.forEach(resourceId => {
+        const terraformId = scanResult.resource_mapping[resourceId].address
+        core.info(`\t${terraformId}`)
+      })
+    })
+    core.endGroup()
+
     if (statusCode === 200) {
       core.info('[DivvyCloud]: Scan completed successfully. All insights have passed.')
     } else if (statusCode === 202) {
