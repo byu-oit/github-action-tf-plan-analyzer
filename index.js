@@ -1,6 +1,8 @@
 const core = require('@actions/core')
 const { exec } = require('@actions/exec')
 const request = require('request-promise-native')
+const chalk = require('chalk')
+chalk.level = 1 // Chalk doesn't detect that GitHub Actions supports color. This forces chalk to use color.
 
 const divvycloudLoginUrl = 'https://divvycloud-dev.byu.edu/v2/public/user/login'
 const divvycloudScanUrl = 'https://divvycloud-dev.byu.edu/v3/iac/scan'
@@ -76,6 +78,61 @@ async function getScan (authToken, author, scanName, json) {
   return { statusCode, body }
 }
 
+function printSummary (scanResult) {
+  core.info(chalk.bold.underline('\nSummary:'))
+
+  if (scanResult.details.passed_insights.length > 0) {
+    core.info(chalk.bold.green(`Passed Insights (${scanResult.details.passed_insights.length})`))
+  } else {
+    core.info('Passed Insights (0)')
+  }
+  scanResult.details.passed_insights.forEach(insight => {
+    core.startGroup(chalk.bold.green(insight.name))
+    core.info(chalk.italic.greenBright(insight.description))
+    core.info(chalk.green(`Severity: ${insight.severity}`))
+    core.info(chalk.greenBright(insight.notes))
+    core.endGroup()
+    insight.success.forEach(resourceId => {
+      const terraformId = scanResult.resource_mapping[resourceId].address
+      core.info(`  • ${chalk.greenBright(terraformId)}`)
+    })
+  })
+
+  if (scanResult.details.warned_insights.length > 0) {
+    core.info(chalk.bold.yellow(`Warned Insights (${scanResult.details.warned_insights.length})`))
+  } else {
+    core.info('Warned Insights (0)')
+  }
+  scanResult.details.warned_insights.forEach(insight => {
+    core.startGroup(chalk.bold.yellow(insight.name))
+    core.info(chalk.italic.yellowBright(insight.description))
+    core.info(chalk.yellow(`Severity: ${insight.severity}`))
+    core.info(chalk.yellowBright(insight.notes))
+    core.endGroup()
+    insight.warning.forEach(resourceId => {
+      const terraformId = scanResult.resource_mapping[resourceId].address
+      core.info(`  • ${chalk.yellowBright(terraformId)}`)
+    })
+  })
+
+  if (scanResult.details.failed_insights.length > 0) {
+    core.info(chalk.bold.red(`Failed Insights (${scanResult.details.failed_insights.length})`))
+  } else {
+    core.info('Failed Insights (0)')
+  }
+  scanResult.details.failed_insights.forEach(insight => {
+    core.startGroup(chalk.bold.red(insight.name))
+    core.info(chalk.italic.redBright(insight.description))
+    core.info(chalk.red(`Severity: ${insight.severity}`))
+    core.info(chalk.redBright(insight.notes))
+    core.endGroup()
+    insight.failure.forEach(resourceId => {
+      const terraformId = scanResult.resource_mapping[resourceId].address
+      core.info(`  • ${chalk.redBright(terraformId)}`)
+    })
+  })
+}
+
 // most @actions toolkit packages have async methods
 async function run () {
   try {
@@ -102,6 +159,10 @@ async function run () {
     core.startGroup('Full Scan Results')
     core.info(JSON.stringify(scanResult, null, 2))
     core.endGroup()
+
+    printSummary(scanResult)
+
+    core.info('')
 
     if (statusCode === 200) {
       core.info('[DivvyCloud]: Scan completed successfully. All insights have passed.')

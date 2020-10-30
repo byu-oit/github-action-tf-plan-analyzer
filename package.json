@@ -25,6 +25,7 @@
   "dependencies": {
     "@actions/core": "^1.2.6",
     "@actions/exec": "^1.0.4",
+    "chalk": "^4.1.0",
     "request": "^2.88.2",
     "request-promise-native": "^1.0.9"
   },
