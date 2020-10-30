@@ -78,13 +78,6 @@ async function getScan (authToken, author, scanName, json) {
   return { statusCode, body }
 }
 
-const green = chalk.ansi(32)
-const lightGreen = chalk.ansi(92)
-// const yellow = chalk.ansi(33)
-// const lightYellow = chalk.ansi(93)
-// const red = chalk.ansi(31)
-// const lightRed = chalk.ansi(91)
-
 // most @actions toolkit packages have async methods
 async function run () {
   try {
@@ -112,17 +105,17 @@ async function run () {
     core.info(JSON.stringify(scanResult, null, 2))
     core.endGroup()
 
-    core.info('\nSummary:')
-    core.info(green(`Passed Insights (${scanResult.details.passed_insights.length})`))
+    core.info(chalk.bold.underline('\nSummary:'))
+    core.info(chalk.bold.green(`Passed Insights (${scanResult.details.passed_insights.length})`))
     scanResult.details.passed_insights.forEach(insight => {
-      core.info(lightGreen(insight.name))
-      core.startGroup(lightGreen(`Description: ${insight.description} (Expand for more details)`))
-      core.info(lightGreen(insight.notes))
+      core.info(chalk.bold.greenBright(insight.name))
+      core.startGroup(chalk.greenBright(`Description: ${insight.description}`))
+      core.info(chalk.greenBright(insight.notes))
       core.endGroup()
-      core.info(lightGreen('Resources:'))
+      core.info(chalk.greenBright('Resources:'))
       insight.success.forEach(resourceId => {
         const terraformId = scanResult.resource_mapping[resourceId].address
-        core.info(`\t${lightGreen(terraformId)}`)
+        core.info(`  ${chalk.greenBright(terraformId)}`)
       })
     })
 
