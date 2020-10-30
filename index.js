@@ -108,14 +108,13 @@ async function run () {
     core.info(chalk.bold.underline('\nSummary:'))
     core.info(chalk.bold.green(`Passed Insights (${scanResult.details.passed_insights.length})`))
     scanResult.details.passed_insights.forEach(insight => {
-      core.info(chalk.bold.greenBright(insight.name))
-      core.startGroup(chalk.greenBright(`Description: ${insight.description}`))
+      core.info(chalk.bold.green(insight.name))
+      core.startGroup(chalk.greenBright(`${insight.description}`))
       core.info(chalk.greenBright(insight.notes))
       core.endGroup()
-      core.info(chalk.greenBright('Resources:'))
       insight.success.forEach(resourceId => {
         const terraformId = scanResult.resource_mapping[resourceId].address
-        core.info(`  ${chalk.greenBright(terraformId)}`)
+        core.info(`    • ${chalk.greenBright(terraformId)}`)
       })
     })
 
