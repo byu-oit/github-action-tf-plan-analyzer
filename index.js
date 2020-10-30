@@ -2,6 +2,7 @@ const core = require('@actions/core')
 const { exec } = require('@actions/exec')
 const request = require('request-promise-native')
 const chalk = require('chalk')
+chalk.level = 1
 
 const divvycloudLoginUrl = 'https://divvycloud-dev.byu.edu/v2/public/user/login'
 const divvycloudScanUrl = 'https://divvycloud-dev.byu.edu/v3/iac/scan'
