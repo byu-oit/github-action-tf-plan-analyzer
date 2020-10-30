@@ -1,6 +1,7 @@
 const core = require('@actions/core')
 const { exec } = require('@actions/exec')
 const request = require('request-promise-native')
+const chalk = require('chalk')
 
 const divvycloudLoginUrl = 'https://divvycloud-dev.byu.edu/v2/public/user/login'
 const divvycloudScanUrl = 'https://divvycloud-dev.byu.edu/v3/iac/scan'
@@ -76,6 +77,13 @@ async function getScan (authToken, author, scanName, json) {
   return { statusCode, body }
 }
 
+const green = chalk.green
+const lightGreen = chalk.ansi()
+const yellow = chalk.ansi()
+const lightYellow = chalk.ansi()
+const red = chalk.ansi()
+const lightRed = chalk.ansi()
+
 // most @actions toolkit packages have async methods
 async function run () {
   try {
@@ -104,19 +112,18 @@ async function run () {
     core.endGroup()
 
     core.info('\nSummary:')
-    core.startGroup(`Passed Insights (${scanResult.details.passed_insights.length})`)
+    core.info(chalk.green(`Passed Insights (${scanResult.details.passed_insights.length})`))
     scanResult.details.passed_insights.forEach(insight => {
-      core.info(insight.name)
-      core.startGroup('Details')
-      core.info(`Description: ${insight.description}\nNotes: ${insight.notes}`)
+      core.info(chalk.greenBright(insight.name))
+      core.startGroup(chalk.greenBright(`Description: ${insight.description} (Expand for more details)`))
+      core.info(chalk.greenBright(insight.notes))
       core.endGroup()
-      core.info('Resources:')
+      core.info(chalk.greenBright('Resources:'))
       insight.success.forEach(resourceId => {
         const terraformId = scanResult.resource_mapping[resourceId].address
-        core.info(`\t${terraformId}`)
+        core.info(`\t${chalk.greenBright(terraformId)}`)
       })
     })
-    core.endGroup()
 
     if (statusCode === 200) {
       core.info('[DivvyCloud]: Scan completed successfully. All insights have passed.')
