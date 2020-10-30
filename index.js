@@ -106,7 +106,12 @@ async function run () {
     core.endGroup()
 
     core.info(chalk.bold.underline('\nSummary:'))
-    core.info(chalk.bold.green(`Passed Insights (${scanResult.details.passed_insights.length})`))
+
+    if (scanResult.details.passed_insights.length > 0) {
+      core.info(chalk.bold.green(`Passed Insights (${scanResult.details.passed_insights.length})`))
+    } else {
+      core.info(`Passed Insights (0)`)
+    }
     scanResult.details.passed_insights.forEach(insight => {
       core.startGroup(chalk.bold.green(insight.name))
       core.info(chalk.italic.greenBright(insight.description))
@@ -115,6 +120,38 @@ async function run () {
       insight.success.forEach(resourceId => {
         const terraformId = scanResult.resource_mapping[resourceId].address
         core.info(`  • ${chalk.greenBright(terraformId)}`)
+      })
+    })
+
+    if (scanResult.details.warned_insights.length > 0) {
+      core.info(chalk.bold.yellow(`Warned Insights (${scanResult.details.warned_insights.length})`))
+    } else {
+      core.info(`Warned Insights (0)`)
+    }
+    scanResult.details.warned_insights.forEach(insight => {
+      core.startGroup(chalk.bold.yellow(insight.name))
+      core.info(chalk.italic.yellowBright(insight.description))
+      core.info(chalk.yellowBright(insight.notes))
+      core.endGroup()
+      insight.warning.forEach(resourceId => {
+        const terraformId = scanResult.resource_mapping[resourceId].address
+        core.info(`  • ${chalk.yellowBright(terraformId)}`)
+      })
+    })
+
+    if (scanResult.details.failed_insights.length > 0) {
+      core.info(chalk.bold.red(`Failed Insights (${scanResult.details.failed_insights.length})`))
+    } else {
+      core.info(`Failed Insights (0)`)
+    }
+    scanResult.details.failed_insights.forEach(insight => {
+      core.startGroup(chalk.bold.red(insight.name))
+      core.info(chalk.italic.redBright(insight.description))
+      core.info(chalk.redBright(insight.notes))
+      core.endGroup()
+      insight.failure.forEach(resourceId => {
+        const terraformId = scanResult.resource_mapping[resourceId].address
+        core.info(`  • ${chalk.redBright(terraformId)}`)
       })
     })
 
