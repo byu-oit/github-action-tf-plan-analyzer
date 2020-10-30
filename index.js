@@ -115,6 +115,9 @@ async function run () {
     scanResult.details.passed_insights.forEach(insight => {
       core.startGroup(chalk.bold.green(insight.name))
       core.info(chalk.italic.greenBright(insight.description))
+      core.info(chalk.greenBright('-----------'))
+      core.info(chalk.greenBright(`Severity: ${insight.severity}`))
+      core.info(chalk.greenBright('-----------'))
       core.info(chalk.greenBright(insight.notes))
       core.endGroup()
       insight.success.forEach(resourceId => {
@@ -131,6 +134,9 @@ async function run () {
     scanResult.details.warned_insights.forEach(insight => {
       core.startGroup(chalk.bold.yellow(insight.name))
       core.info(chalk.italic.yellowBright(insight.description))
+      core.info(chalk.yellowBright('-----------'))
+      core.info(chalk.yellowBright(`Severity: ${insight.severity}`))
+      core.info(chalk.yellowBright('-----------'))
       core.info(chalk.yellowBright(insight.notes))
       core.endGroup()
       insight.warning.forEach(resourceId => {
@@ -147,6 +153,9 @@ async function run () {
     scanResult.details.failed_insights.forEach(insight => {
       core.startGroup(chalk.bold.red(insight.name))
       core.info(chalk.italic.redBright(insight.description))
+      core.info(chalk.redBright('-----------'))
+      core.info(chalk.redBright(`Severity: ${insight.severity}`))
+      core.info(chalk.redBright('-----------'))
       core.info(chalk.redBright(insight.notes))
       core.endGroup()
       insight.failure.forEach(resourceId => {
@@ -154,6 +163,8 @@ async function run () {
         core.info(`  • ${chalk.redBright(terraformId)}`)
       })
     })
+
+    core.info('') // Just a newline
 
     if (statusCode === 200) {
       core.info('[DivvyCloud]: Scan completed successfully. All insights have passed.')
