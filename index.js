@@ -89,9 +89,7 @@ function printSummary (scanResult) {
   scanResult.details.passed_insights.forEach(insight => {
     core.startGroup(chalk.bold.green(insight.name))
     core.info(chalk.italic.greenBright(insight.description))
-    core.info(chalk.greenBright('-----------'))
-    core.info(chalk.greenBright(`Severity: ${insight.severity}`))
-    core.info(chalk.greenBright('-----------'))
+    core.info(chalk.green(`Severity: ${insight.severity}`))
     core.info(chalk.greenBright(insight.notes))
     core.endGroup()
     insight.success.forEach(resourceId => {
@@ -108,9 +106,7 @@ function printSummary (scanResult) {
   scanResult.details.warned_insights.forEach(insight => {
     core.startGroup(chalk.bold.yellow(insight.name))
     core.info(chalk.italic.yellowBright(insight.description))
-    core.info(chalk.yellowBright('-----------'))
-    core.info(chalk.yellowBright(`Severity: ${insight.severity}`))
-    core.info(chalk.yellowBright('-----------'))
+    core.info(chalk.yellow(`Severity: ${insight.severity}`))
     core.info(chalk.yellowBright(insight.notes))
     core.endGroup()
     insight.warning.forEach(resourceId => {
@@ -127,9 +123,7 @@ function printSummary (scanResult) {
   scanResult.details.failed_insights.forEach(insight => {
     core.startGroup(chalk.bold.red(insight.name))
     core.info(chalk.italic.redBright(insight.description))
-    core.info(chalk.redBright('-----------'))
-    core.info(chalk.redBright(`Severity: ${insight.severity}`))
-    core.info(chalk.redBright('-----------'))
+    core.info(chalk.red(`Severity: ${insight.severity}`))
     core.info(chalk.redBright(insight.notes))
     core.endGroup()
     insight.failure.forEach(resourceId => {
