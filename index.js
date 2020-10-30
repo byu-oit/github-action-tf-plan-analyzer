@@ -68,7 +68,7 @@ async function getScan (authToken, author, scanName, json) {
     },
     json: true,
     resolveWithFullResponse: true,
-    simple: true,
+    simple: false,
     headers: {
       'Content-Type': 'application/json;charset=UTF-8',
       Accept: 'application/json',
@@ -160,18 +160,20 @@ async function run () {
     core.info(JSON.stringify(scanResult, null, 2))
     core.endGroup()
 
+    const normalStatusCodesFromScan = [200, 202, 406]
+    if (!normalStatusCodesFromScan.includes(statusCode)) {
+      core.error('[DivvyCloud]: Scan returned an unexpected response. Please contact the DivvyCloud Admins.')
+      return
+    }
+
     printSummary(scanResult)
 
     core.info('')
 
-    if (statusCode === 200) {
-      core.info('[DivvyCloud]: Scan completed successfully. All insights have passed.')
-    } else if (statusCode === 202) {
-      core.warning('[DivvyCloud]: Scan completed successfully, but with warnings. All failure-inducing insights have passed, but some warning-inducing insights did not.')
-    } else if (statusCode === 406) {
-      core.setFailed('[DivvyCloud]: Scan completed, but one or more insights have failed. Please check the DivvyCloud console for more information.')
-    } else {
-      core.warning('[DivvyCloud]: Scan failed to return correct response. Please contact the DivvyCloud Admins.')
+    switch (statusCode) {
+      case 200: core.info('[DivvyCloud]: Scan completed successfully. All insights have passed.'); break
+      case 202: core.warning('[DivvyCloud]: Scan completed successfully, but with warnings. All failure-inducing insights have passed, but some warning-inducing insights did not.'); break
+      case 406: core.error('[DivvyCloud]: Scan completed, but one or more insights have failed. Please check the log for more information.')
     }
   } catch (error) {
     core.setFailed(error)
