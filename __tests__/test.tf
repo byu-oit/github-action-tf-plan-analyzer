@@ -29,7 +29,7 @@ resource "aws_security_group" "allow_ssh" {
 
 resource "aws_s3_bucket" "b" {
   bucket = "my-tf-test-bucket"
-  acl    = "public"
+  acl    = "public-read-write"
 
   tags = {
     Name        = "My bucket"

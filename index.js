@@ -4,8 +4,8 @@ const request = require('request-promise-native')
 const chalk = require('chalk')
 chalk.level = 1 // Chalk doesn't detect that GitHub Actions supports color. This forces chalk to use color.
 
-const divvycloudLoginUrl = 'https://divvycloud-dev.byu.edu/v2/public/user/login'
-const divvycloudScanUrl = 'https://divvycloud-dev.byu.edu/v3/iac/scan'
+const divvycloudLoginUrl = 'https://divvycloud.byu.edu/v2/public/user/login'
+const divvycloudScanUrl = 'https://divvycloud.byu.edu/v3/iac/scan'
 
 async function jsonFromPlan (workDir, planFileName) {
   // run terraform show -json to parse the plan into a json string
@@ -63,7 +63,7 @@ async function getScan (authToken, author, scanName, json) {
       scan_name: scanName,
       author_name: author,
       scan_template: json,
-      config_name: 'Test Scan',
+      config_name: 'Github Scan',
       iac_provider: 'terraform'
     },
     json: true,
