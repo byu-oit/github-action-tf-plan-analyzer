@@ -143,7 +143,7 @@ async function run () {
     const password = core.getInput('divvycloud-password', { required: true })
 
     // Environment variables
-    const scanName = process.env.GITHUB_REPO + '.' + process.env.GITHUB_RUN_ID + '.' + process.env.GITHUB_RUN_NUMBER
+    const scanName = process.env.GITHUB_REPOSITORY + '.' + process.env.GITHUB_RUN_ID + '.' + process.env.GITHUB_RUN_NUMBER
     const author = process.env.GITHUB_ACTOR
 
     // Get Terraform plan
