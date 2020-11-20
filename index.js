@@ -93,8 +93,8 @@ function printSummary (scanResult) {
     core.info(chalk.greenBright(insight.notes))
     core.endGroup()
     insight.success.forEach(resourceId => {
-      const terraformId = scanResult.resource_mapping[resourceId].address
-      core.info(`  • ${chalk.greenBright(terraformId)}`)
+      const { address: terraformId, name } = scanResult.resource_mapping[resourceId]
+      core.info(`  • ${chalk.greenBright(terraformId || `name = ${name}`)}`)
     })
   })
 
@@ -110,8 +110,8 @@ function printSummary (scanResult) {
     core.info(chalk.yellowBright(insight.notes))
     core.endGroup()
     insight.warning.forEach(resourceId => {
-      const terraformId = scanResult.resource_mapping[resourceId].address
-      core.info(`  • ${chalk.yellowBright(terraformId)}`)
+      const { address: terraformId, name } = scanResult.resource_mapping[resourceId]
+      core.info(`  • ${chalk.yellowBright(terraformId || `name = ${name}`)}`)
     })
   })
 
@@ -127,8 +127,8 @@ function printSummary (scanResult) {
     core.info(chalk.redBright(insight.notes))
     core.endGroup()
     insight.failure.forEach(resourceId => {
-      const terraformId = scanResult.resource_mapping[resourceId].address
-      core.info(`  • ${chalk.redBright(terraformId)}`)
+      const { address: terraformId, name } = scanResult.resource_mapping[resourceId]
+      core.info(`  • ${chalk.redBright(terraformId || `name = ${name}`)}`)
     })
   })
 }
