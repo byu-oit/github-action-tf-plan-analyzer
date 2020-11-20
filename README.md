@@ -21,7 +21,7 @@ jobs:
     # terraform init
     # terraform plan
     - name: Analyze Terraform Plan
-      uses: byu-oit/github-action-tf-plan-analyzer@v1
+      uses: byu-oit/github-action-tf-plan-analyzer@v2.0.2
       with:
         divvycloud-username: ${{ secrets.DIVVYCLOUD_USERNAME }}
         divvycloud-password: ${{ secrets.DIVVYCLOUD_PASSWORD }}
