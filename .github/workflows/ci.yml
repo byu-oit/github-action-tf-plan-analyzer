@@ -3,7 +3,7 @@ on:
   pull_request:
   push:
     branches:
-      - main
+      - staging
       - 'v*'
 env:
   node_version: "12.x"
