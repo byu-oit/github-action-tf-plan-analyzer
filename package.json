@@ -4,7 +4,7 @@
   "description": "Terraform Plan Analyzer",
   "main": "index.js",
   "scripts": {
-    "lint": "npx standard index.js",
+    "lint": "npx standard",
     "package": "npx ncc build index.js -m -o dist"
   },
   "repository": {
@@ -23,15 +23,15 @@
   },
   "homepage": "https://github.com/byu-oit/github-action-tf-plan-analyzer#readme",
   "dependencies": {
-    "@actions/core": "^1.3.0",
-    "@actions/exec": "^1.0.4",
+    "@actions/core": "^1.4.0",
+    "@actions/exec": "^1.1.0",
     "chalk": "^4.1.1",
     "request": "^2.88.2",
     "request-promise-native": "^1.0.9"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.28.6",
-    "eslint": "~7.27.0",
-    "jest": "^27.0.4"
+    "jest": "^27.0.4",
+    "standard": "^16.0.3"
   }
 }
