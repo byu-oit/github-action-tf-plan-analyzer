@@ -171,9 +171,9 @@ async function run () {
     core.info('')
 
     switch (statusCode) {
-      case 200: core.info('[DivvyCloud]: Scan completed successfully. All insights have passed.'); break
-      case 202: core.warning('[DivvyCloud]: Scan completed successfully, but with warnings. All failure-inducing insights have passed, but some warning-inducing insights did not.'); break
-      case 406: core.error('[DivvyCloud]: Scan completed, but one or more insights have failed. Please check the log for more information.')
+      case 200: core.info('[DivvyCloud]: Scan completed. All checks have passed!'); break
+      case 202: core.warning('[DivvyCloud]: Scan completed, but with warnings.'); break
+      case 406: core.setFailed('[DivvyCloud]: Scan completed, but one or more checks failed. Please check the log for more information.')
     }
   } catch (error) {
     core.setFailed(error)
