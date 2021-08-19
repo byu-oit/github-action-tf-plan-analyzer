@@ -23,7 +23,7 @@
   },
   "homepage": "https://github.com/byu-oit/github-action-tf-plan-analyzer#readme",
   "dependencies": {
-    "@actions/core": "^1.4.0",
+    "@actions/core": "^1.5.0",
     "@actions/exec": "^1.1.0",
     "chalk": "^4.1.1",
     "request": "^2.88.2",
