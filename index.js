@@ -4,8 +4,8 @@ const request = require('request-promise-native')
 const chalk = require('chalk')
 chalk.level = 1 // Chalk doesn't detect that GitHub Actions supports color. This forces chalk to use color.
 
-const divvycloudLoginUrl = 'https://byu.customer.divvycloud.com/v2/public/user/login'
-const divvycloudScanUrl = 'https://byu.customer.divvycloud.com/v3/iac/scan'
+const divvycloudLoginUrl = 'https://blahbyu.customer.divvycloud.com/v2/public/user/login'
+const divvycloudScanUrl = 'https://blahbyu.customer.divvycloud.com/v3/iac/scan'
 
 async function jsonFromPlan (workDir, planFileName) {
   // run terraform show -json to parse the plan into a json string
