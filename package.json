@@ -30,7 +30,7 @@
     "request-promise-native": "^1.0.9"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.32.0",
+    "@vercel/ncc": "^0.33.4",
     "jest": "^27.4.0",
     "standard": "^16.0.4"
   }
