@@ -20,12 +20,9 @@ jobs:
           node-version: ${{ env.node_version }}
 
       - name: npm install
-        run: npm install
+        run: npm ci
 
-      - name: npm build
-        run: npm build
-
-      - name: npm run pack
+      - name: npm run package
         run: npm run package
 
   audit:
@@ -56,5 +53,5 @@ jobs:
       - name: npm install
         run: npm ci
 
-      - name: npm lint
+      - name: npm run lint
         run: npm run lint
