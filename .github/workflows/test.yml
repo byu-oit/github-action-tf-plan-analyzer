@@ -5,6 +5,9 @@ on:
     branches:
       - staging
       - 'v*'
+env:
+  aws_account: "887069801155"
+  aws_gha_role: "gha-tf-plan-analyzer-org-gha"
 
 jobs:
   test:
@@ -12,6 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       tf_version: 1.3.3
+    permissions:
+      id-token: write
+      contents: read
     steps:
     - name: Check Out
       uses: actions/checkout@v3
@@ -19,8 +25,8 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v2
       with:
-        aws-access-key-id: ${{ secrets.BYU_ORG_SERVICE_KEY }}
-        aws-secret-access-key: ${{ secrets.BYU_ORG_SERVICE_SECRET }}
+        role-to-assume: "arn:aws:iam::${{ env.aws_account }}:role/${{ env.aws_gha_role }}"
+        role-session-name: ${{ github.sha }}
         aws-region: us-west-2
 
     - name: Terraform Setup
