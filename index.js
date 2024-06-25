@@ -8,6 +8,10 @@ const divvycloudLoginUrl = 'https://byu.customer.divvycloud.com/v2/public/user/l
 const divvycloudScanUrl = 'https://byu.customer.divvycloud.com/v3/iac/scan'
 
 async function jsonFromPlan (workDir, planFileName) {
+  const exitCode = await exec('which tofu', undefined, { silent: true, ignoreReturnCode: true })
+  const hasTofu = exitCode === 0
+  const command = hasTofu ? 'tofu' : 'terraform'
+
   // run terraform show -json to parse the plan into a json string
   let output = ''
   const options = {
@@ -21,7 +25,7 @@ async function jsonFromPlan (workDir, planFileName) {
   }
   core.debug(`execOptions: ${JSON.stringify(options)}`)
   core.startGroup('Plan to be Scanned')
-  await exec('terraform', ['show', '-json', planFileName], options)
+  await exec(command, ['show', '-json', planFileName], options)
   core.endGroup()
 
   // pull out any extra fluff from terraform wrapper from the hashicorp/setup-terraform action
@@ -79,8 +83,11 @@ async function getScan (authToken, author, scanName, json) {
 }
 
 function printSummary (scanResult) {
+  core.debug('Printing summary')
+
   core.info(chalk.bold.underline('\nSummary:'))
 
+  core.debug('Printing passed insights')
   if (scanResult.details.passed_insights.length > 0) {
     core.info(chalk.bold.green(`Passed Insights (${scanResult.details.passed_insights.length})`))
   } else {
@@ -98,6 +105,7 @@ function printSummary (scanResult) {
     })
   })
 
+  core.debug('Printing warned insights')
   if (scanResult.details.warned_insights.length > 0) {
     core.info(chalk.bold.yellow(`Warned Insights (${scanResult.details.warned_insights.length})`))
   } else {
@@ -115,6 +123,7 @@ function printSummary (scanResult) {
     })
   })
 
+  core.debug('Printing failed insights')
   if (scanResult.details.failed_insights.length > 0) {
     core.info(chalk.bold.red(`Failed Insights (${scanResult.details.failed_insights.length})`))
   } else {
