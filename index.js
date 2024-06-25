@@ -83,8 +83,11 @@ async function getScan (authToken, author, scanName, json) {
 }
 
 function printSummary (scanResult) {
+  core.debug('Printing summary')
+
   core.info(chalk.bold.underline('\nSummary:'))
 
+  core.debug('Printing passed insights')
   if (scanResult.details.passed_insights.length > 0) {
     core.info(chalk.bold.green(`Passed Insights (${scanResult.details.passed_insights.length})`))
   } else {
@@ -102,6 +105,7 @@ function printSummary (scanResult) {
     })
   })
 
+  core.debug('Printing warned insights')
   if (scanResult.details.warned_insights.length > 0) {
     core.info(chalk.bold.yellow(`Warned Insights (${scanResult.details.warned_insights.length})`))
   } else {
@@ -119,6 +123,7 @@ function printSummary (scanResult) {
     })
   })
 
+  core.debug('Printing failed insights')
   if (scanResult.details.failed_insights.length > 0) {
     core.info(chalk.bold.red(`Failed Insights (${scanResult.details.failed_insights.length})`))
   } else {
