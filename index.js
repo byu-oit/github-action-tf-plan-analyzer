@@ -89,10 +89,10 @@ async function getScan (authToken, author, scanName, json) {
   const status = response.status
   if (![200, 202, 406].includes(status)) {
     const message = `[DivvyCloud]: Scan returned an unexpected response. Please contact the DivvyCloud Admins. Response: ${status}`
-    core.debug(`DivvyCloud Response: ${JSON.stringify(response.json(), 0)}`)
+    core.debug(`DivvyCloud Response: ${JSON.stringify(await response.json(), null, 2)}`)
     throw new Error(message)
   }
-  const scanResult = response.json()
+  const scanResult = await response.json()
   return { status, scanResult }
 }
 
@@ -209,12 +209,7 @@ async function run () {
     })
 
     // Send JSON plan to DivvyCloud
-    const { status, scanResult } = await getScan(
-      authToken,
-      author,
-      scanName,
-      json
-    ).catch((error) => {
+    const { status, scanResult } = await getScan(authToken, author, scanName, json).catch((error) => {
       core.error(error.message)
     })
 
