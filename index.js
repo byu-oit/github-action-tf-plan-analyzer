@@ -45,11 +45,16 @@ async function jsonFromPlan (workDir, planFileName) {
 async function getAuthToken (username, password) {
   const response = await fetch(divvycloudLoginUrl, {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json;charset=UTF-8',
+      Accept: 'application/json'
+    },
     body: { username, password }
   })
 
   if (!response.ok) {
     const message = `An error occurred while getting a token for DivvyCloud: ${response.status}`
+    core.debug(response)
     throw Error(message)
   }
   const { session_id: token } = await response.json()
