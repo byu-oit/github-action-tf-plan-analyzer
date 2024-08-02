@@ -43,13 +43,13 @@ async function jsonFromPlan (workDir, planFileName) {
 }
 
 async function getAuthToken (username, password) {
+  const data = { username, password }
   const response = await fetch(divvycloudLoginUrl, {
     method: 'POST',
+    body: JSON.stringify(data),
     headers: {
-      'Content-Type': 'application/json;charset=UTF-8',
-      Accept: 'application/json'
-    },
-    body: { username, password }
+      'Content-Type': 'application/json;charset=UTF-8'
+    }
   })
 
   if (!response.ok) {
