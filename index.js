@@ -54,7 +54,7 @@ async function getAuthToken (username, password) {
 
   if (!response.ok) {
     const message = `An error occurred while getting a token for DivvyCloud: ${response.status}`
-    core.debug(response)
+    core.debug(`Response Object: ${response}`)
     throw Error(message)
   }
   const { session_id: token } = await response.json()
@@ -79,9 +79,10 @@ async function getScan (authToken, author, scanName, json) {
     }
   })
 
-  if (!response.ok) {
-    const message = `An error occurred while fetching scan results from DivvyCLoud: ${response.status}`
-    core.debug(response)
+  // Normal Responses: 200, 202, 406
+  if (![200, 202, 406].includes(response.status)) {
+    const message = `[DivvyCloud]: Scan returned an unexpected response. Please contact the DivvyCloud Admins. Response: ${response.status}`
+    core.debug(`Response Object: ${response}`)
     throw Error(message)
   }
 
@@ -179,12 +180,6 @@ async function run () {
     core.startGroup('Full Scan Results')
     core.info(JSON.stringify(scanResult, null, 2))
     core.endGroup()
-
-    const normalStatusCodesFromScan = [200, 202, 406]
-    if (!normalStatusCodesFromScan.includes(status)) {
-      core.error('[DivvyCloud]: Scan returned an unexpected response. Please contact the DivvyCloud Admins.')
-      return
-    }
 
     printSummary(scanResult)
 
