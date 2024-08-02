@@ -47,10 +47,14 @@ async function getAuthToken (username, password) {
   try {
     const request = new Request(divvycloudLoginUrl, {
       method: 'POST',
-      body: { username, password },
-      json: true
+      body: { username, password }
     })
-    const { session_id: token } = await fetch(request)
+    const response = await fetch(request)
+    if (!response.ok) {
+      const message = `An error occurred while getting a token for DivvyCloud: ${response.status}`
+      throw Error(message)
+    }
+    const { session_id: token } = await response.json()
     core.setSecret(token)
     return token
   } catch (e) {
@@ -61,7 +65,6 @@ async function getAuthToken (username, password) {
 async function getScan (authToken, author, scanName, json) {
   const request = new Request(divvycloudScanUrl, {
     method: 'POST',
-    uri: divvycloudScanUrl,
     body: {
       scan_name: scanName,
       author_name: author,
@@ -69,16 +72,18 @@ async function getScan (authToken, author, scanName, json) {
       config_name: 'Github Scan',
       iac_provider: 'terraform'
     },
-    json: true,
-    resolveWithFullResponse: true,
-    simple: false,
     headers: {
       'Content-Type': 'application/json;charset=UTF-8',
       Accept: 'application/json',
       'X-Auth-Token': authToken
     }
   })
-  const { statusCode, body } = await fetch(request)
+  const response = await fetch(request)
+  if (!response.ok) {
+    const message = `An error has occurred while fetching the scan results from DivvyCLoud: ${response.status}`
+    throw new Error(message)
+  }
+  const { statusCode, body } = await response.json()
   return { statusCode, body }
 }
 
