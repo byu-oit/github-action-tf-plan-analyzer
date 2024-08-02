@@ -83,7 +83,7 @@ async function getScan (authToken, author, scanName, json) {
     const message = `An error occurred while fetching scan results from DivvyCLoud: ${response.status}`
     throw Error(message)
   }
-  const { status, body } = response.json()
+  const { status, body } = await response.json()
   return { status, body }
 }
 
