@@ -1,7 +1,6 @@
-const core = require('@actions/core')
-const { exec } = require('@actions/exec')
-const chalk = require('chalk')
-chalk.level = 1 // Chalk doesn't detect that GitHub Actions supports color. This forces chalk to use color.
+import * as core from '@actions/core'
+import { exec } from '@actions/exec'
+import { styleText } from 'node:util'
 
 const divvycloudLoginUrl = 'https://byu.customer.divvycloud.com/v2/public/user/login'
 const divvycloudScanUrl = 'https://byu.customer.divvycloud.com/v3/iac/scan'
@@ -90,59 +89,59 @@ async function getScan (authToken, author, scanName, json) {
 function printSummary (scanResult) {
   core.debug('Printing summary')
 
-  core.info(chalk.bold.underline('\nSummary:'))
+  core.info(styleText(['bold', 'underline'], '\nSummary:'))
 
   core.debug('Printing passed insights')
   if (scanResult.details.passed_insights.length > 0) {
-    core.info(chalk.bold.green(`Passed Insights (${scanResult.details.passed_insights.length})`))
+    core.info(styleText(['bold', 'green'], `Passed Insights (${scanResult.details.passed_insights.length})`))
   } else {
     core.info('Passed Insights (0)')
   }
   scanResult.details.passed_insights.forEach(insight => {
-    core.startGroup(chalk.bold.green(insight.name))
-    core.info(chalk.italic.greenBright(insight.description))
-    core.info(chalk.green(`Severity: ${insight.severity}`))
-    core.info(chalk.greenBright(insight.notes))
+    core.startGroup(styleText(['bold', 'green'], insight.name))
+    core.info(styleText(['italic', 'greenBright'], insight.description))
+    core.info(styleText('green', `Severity: ${insight.severity}`))
+    core.info(styleText('greenBright', insight.notes))
     core.endGroup()
     insight.success.forEach(resourceId => {
       const { address: terraformId, name } = scanResult.resource_mapping[resourceId]
-      core.info(`  • ${chalk.greenBright(terraformId || `name = ${name}`)}`)
+      core.info(`  • ${styleText('greenBright', terraformId || `name = ${name}`)}`)
     })
   })
 
   core.debug('Printing warned insights')
   if (scanResult.details.warned_insights.length > 0) {
-    core.info(chalk.bold.yellow(`Warned Insights (${scanResult.details.warned_insights.length})`))
+    core.info(styleText(['bold', 'yellow'], `Warned Insights (${scanResult.details.warned_insights.length})`))
   } else {
     core.info('Warned Insights (0)')
   }
   scanResult.details.warned_insights.forEach(insight => {
-    core.startGroup(chalk.bold.yellow(insight.name))
-    core.info(chalk.italic.yellowBright(insight.description))
-    core.info(chalk.yellow(`Severity: ${insight.severity}`))
-    core.info(chalk.yellowBright(insight.notes))
+    core.startGroup(styleText(['bold', 'yellow'], insight.name))
+    core.info(styleText(['italic', 'yellowBright'], insight.description))
+    core.info(styleText('yellow', `Severity: ${insight.severity}`))
+    core.info(styleText('yellowBright', insight.notes))
     core.endGroup()
     insight.warning.forEach(resourceId => {
       const { address: terraformId, name } = scanResult.resource_mapping[resourceId]
-      core.info(`  • ${chalk.yellowBright(terraformId || `name = ${name}`)}`)
+      core.info(`  • ${styleText('yellowBright', terraformId || `name = ${name}`)}`)
     })
   })
 
   core.debug('Printing failed insights')
   if (scanResult.details.failed_insights.length > 0) {
-    core.info(chalk.bold.red(`Failed Insights (${scanResult.details.failed_insights.length})`))
+    core.info(styleText(['bold', 'red'], `Failed Insights (${scanResult.details.failed_insights.length})`))
   } else {
     core.info('Failed Insights (0)')
   }
   scanResult.details.failed_insights.forEach(insight => {
-    core.startGroup(chalk.bold.red(insight.name))
-    core.info(chalk.italic.redBright(insight.description))
-    core.info(chalk.red(`Severity: ${insight.severity}`))
-    core.info(chalk.redBright(insight.notes))
+    core.startGroup(styleText(['bold', 'red'], insight.name))
+    core.info(styleText(['italic', 'redBright'], insight.description))
+    core.info(styleText('red', `Severity: ${insight.severity}`))
+    core.info(styleText('redBright', insight.notes))
     core.endGroup()
     insight.failure.forEach(resourceId => {
       const { address: terraformId, name } = scanResult.resource_mapping[resourceId]
-      core.info(`  • ${chalk.redBright(terraformId || `name = ${name}`)}`)
+      core.info(`  • ${styleText('redBright', terraformId || `name = ${name}`)}`)
     })
   })
 }
