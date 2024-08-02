@@ -6,7 +6,10 @@ const divvycloudLoginUrl = 'https://byu.customer.divvycloud.com/v2/public/user/l
 const divvycloudScanUrl = 'https://byu.customer.divvycloud.com/v3/iac/scan'
 
 async function jsonFromPlan (workDir, planFileName) {
-  const exitCode = await exec('which tofu', undefined, { silent: true, ignoreReturnCode: true })
+  const exitCode = await exec('which tofu', undefined, {
+    silent: true,
+    ignoreReturnCode: true
+  })
   const hasTofu = exitCode === 0
   const command = hasTofu ? 'tofu' : 'terraform'
 
@@ -32,7 +35,9 @@ async function jsonFromPlan (workDir, planFileName) {
     core.debug('** start of output **')
     core.debug(output)
     core.debug('** end of output **')
-    throw new Error('There was an error while parsing your Terraform plan. The output from "terraform show -json" didn\'t match with /{.*}/ as expected.')
+    throw new Error(
+      'There was an error while parsing your Terraform plan. The output from "terraform show -json" didn\'t match with /{.*}/ as expected.'
+    )
   }
 
   core.debug('** matched json **')
@@ -83,10 +88,9 @@ async function getScan (authToken, author, scanName, json) {
   const status = response.status
   if (![200, 202, 406].includes(status)) {
     const message = `[DivvyCloud]: Scan returned an unexpected response. Please contact the DivvyCloud Admins. Response: ${status}`
-    core.debug(`Response Object: ${response.json()}`)
+    core.debug(`DivvyCloud Response: ${JSON.stringify(response.json(), 0)}`)
     throw new Error(message)
   }
-
   const scanResult = response.json()
   return { status, scanResult }
 }
@@ -98,55 +102,79 @@ function printSummary (scanResult) {
 
   core.debug('Printing passed insights')
   if (scanResult.details.passed_insights.length > 0) {
-    core.info(styleText(['bold', 'green'], `Passed Insights (${scanResult.details.passed_insights.length})`))
+    core.info(
+      styleText(
+        ['bold', 'green'],
+        `Passed Insights (${scanResult.details.passed_insights.length})`
+      )
+    )
   } else {
     core.info('Passed Insights (0)')
   }
-  scanResult.details.passed_insights.forEach(insight => {
+  scanResult.details.passed_insights.forEach((insight) => {
     core.startGroup(styleText(['bold', 'green'], insight.name))
     core.info(styleText(['italic', 'greenBright'], insight.description))
     core.info(styleText('green', `Severity: ${insight.severity}`))
     core.info(styleText('greenBright', insight.notes))
     core.endGroup()
-    insight.success.forEach(resourceId => {
-      const { address: terraformId, name } = scanResult.resource_mapping[resourceId]
-      core.info(`  • ${styleText('greenBright', terraformId || `name = ${name}`)}`)
+    insight.success.forEach((resourceId) => {
+      const { address: terraformId, name } =
+        scanResult.resource_mapping[resourceId]
+      core.info(
+        `  • ${styleText('greenBright', terraformId || `name = ${name}`)}`
+      )
     })
   })
 
   core.debug('Printing warned insights')
   if (scanResult.details.warned_insights.length > 0) {
-    core.info(styleText(['bold', 'yellow'], `Warned Insights (${scanResult.details.warned_insights.length})`))
+    core.info(
+      styleText(
+        ['bold', 'yellow'],
+        `Warned Insights (${scanResult.details.warned_insights.length})`
+      )
+    )
   } else {
     core.info('Warned Insights (0)')
   }
-  scanResult.details.warned_insights.forEach(insight => {
+  scanResult.details.warned_insights.forEach((insight) => {
     core.startGroup(styleText(['bold', 'yellow'], insight.name))
     core.info(styleText(['italic', 'yellowBright'], insight.description))
     core.info(styleText('yellow', `Severity: ${insight.severity}`))
     core.info(styleText('yellowBright', insight.notes))
     core.endGroup()
-    insight.warning.forEach(resourceId => {
-      const { address: terraformId, name } = scanResult.resource_mapping[resourceId]
-      core.info(`  • ${styleText('yellowBright', terraformId || `name = ${name}`)}`)
+    insight.warning.forEach((resourceId) => {
+      const { address: terraformId, name } =
+        scanResult.resource_mapping[resourceId]
+      core.info(
+        `  • ${styleText('yellowBright', terraformId || `name = ${name}`)}`
+      )
     })
   })
 
   core.debug('Printing failed insights')
   if (scanResult.details.failed_insights.length > 0) {
-    core.info(styleText(['bold', 'red'], `Failed Insights (${scanResult.details.failed_insights.length})`))
+    core.info(
+      styleText(
+        ['bold', 'red'],
+        `Failed Insights (${scanResult.details.failed_insights.length})`
+      )
+    )
   } else {
     core.info('Failed Insights (0)')
   }
-  scanResult.details.failed_insights.forEach(insight => {
+  scanResult.details.failed_insights.forEach((insight) => {
     core.startGroup(styleText(['bold', 'red'], insight.name))
     core.info(styleText(['italic', 'redBright'], insight.description))
     core.info(styleText('red', `Severity: ${insight.severity}`))
     core.info(styleText('redBright', insight.notes))
     core.endGroup()
-    insight.failure.forEach(resourceId => {
-      const { address: terraformId, name } = scanResult.resource_mapping[resourceId]
-      core.info(`  • ${styleText('redBright', terraformId || `name = ${name}`)}`)
+    insight.failure.forEach((resourceId) => {
+      const { address: terraformId, name } =
+        scanResult.resource_mapping[resourceId]
+      core.info(
+        `  • ${styleText('redBright', terraformId || `name = ${name}`)}`
+      )
     })
   })
 }
@@ -155,25 +183,37 @@ function printSummary (scanResult) {
 async function run () {
   try {
     // Workflow Inputs
-    const planFileName = core.getInput('terraform-plan-file', { required: true })
+    const planFileName = core.getInput('terraform-plan-file', {
+      required: true
+    })
     const workDir = core.getInput('working-directory', { required: true })
     const username = core.getInput('divvycloud-username', { required: true })
     const password = core.getInput('divvycloud-password', { required: true })
 
     // Environment variables
-    const scanName = process.env.GITHUB_REPOSITORY + '.' + process.env.GITHUB_RUN_ID + '.' + process.env.GITHUB_RUN_NUMBER
+    const scanName =
+      process.env.GITHUB_REPOSITORY +
+      '.' +
+      process.env.GITHUB_RUN_ID +
+      '.' +
+      process.env.GITHUB_RUN_NUMBER
     const author = process.env.GITHUB_ACTOR
 
     // Get Terraform plan
     const json = await jsonFromPlan(workDir, planFileName)
 
     // DivvyCloud Auth token
-    const authToken = await getAuthToken(username, password).catch(error => {
+    const authToken = await getAuthToken(username, password).catch((error) => {
       core.error(error.message)
     })
 
     // Send JSON plan to DivvyCloud
-    const { status, scanResult } = await getScan(authToken, author, scanName, json).catch(error => {
+    const { status, scanResult } = await getScan(
+      authToken,
+      author,
+      scanName,
+      json
+    ).catch((error) => {
       core.error(error.message)
     })
 
@@ -187,9 +227,16 @@ async function run () {
     core.info('')
 
     switch (status) {
-      case 200: core.info('[DivvyCloud]: Scan completed. All checks have passed!'); break
-      case 202: core.warning('[DivvyCloud]: Scan completed, but with warnings.'); break
-      case 406: core.setFailed('[DivvyCloud]: Scan completed, but one or more checks failed. Please check the log for more information.')
+      case 200:
+        core.info('[DivvyCloud]: Scan completed. All checks have passed!')
+        break
+      case 202:
+        core.warning('[DivvyCloud]: Scan completed, but with warnings.')
+        break
+      case 406:
+        core.setFailed(
+          '[DivvyCloud]: Scan completed, but one or more checks failed. Please check the log for more information.'
+        )
     }
   } catch (error) {
     core.setFailed(error)
