@@ -68,15 +68,16 @@ async function getAuthToken (username, password) {
 }
 
 async function getScan (authToken, author, scanName, json) {
+  const data = {
+    scan_name: scanName,
+    author_name: author,
+    scan_template: json,
+    config_name: 'Github Scan',
+    iac_provider: 'terraform'
+  }
   const response = await fetch(divvycloudScanUrl, {
     method: 'POST',
-    body: {
-      scan_name: scanName,
-      author_name: author,
-      scan_template: json,
-      config_name: 'Github Scan',
-      iac_provider: 'terraform'
-    },
+    body: JSON.stringify(data),
     headers: {
       'Content-Type': 'application/json;charset=UTF-8',
       Accept: 'application/json',
