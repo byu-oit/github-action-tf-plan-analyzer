@@ -32,7 +32,7 @@ async function jsonFromPlan (workDir, planFileName) {
     core.debug('** start of output **')
     core.debug(output)
     core.debug('** end of output **')
-    throw Error('There was an error while parsing your Terraform plan. The output from "terraform show -json" didn\'t match with /{.*}/ as expected.')
+    throw new Error('There was an error while parsing your Terraform plan. The output from "terraform show -json" didn\'t match with /{.*}/ as expected.')
   }
 
   core.debug('** matched json **')
@@ -54,8 +54,8 @@ async function getAuthToken (username, password) {
 
   if (!response.ok) {
     const message = `An error occurred while getting a token for DivvyCloud: ${response.status}`
-    core.debug(`Response Object: ${response}`)
-    throw Error(message)
+    core.debug(`Response Object: ${JSON.stringify(response)}`)
+    throw new Error(message)
   }
   const { session_id: token } = await response.json()
   core.setSecret(token)
@@ -80,14 +80,15 @@ async function getScan (authToken, author, scanName, json) {
   })
 
   // Normal Responses: 200, 202, 406
-  if (![200, 202, 406].includes(response.status)) {
-    const message = `[DivvyCloud]: Scan returned an unexpected response. Please contact the DivvyCloud Admins. Response: ${response.status}`
-    core.debug(`Response Object: ${response}`)
-    throw Error(message)
+  const status = response.status
+  if (![200, 202, 406].includes(status)) {
+    const message = `[DivvyCloud]: Scan returned an unexpected response. Please contact the DivvyCloud Admins. Response: ${status}`
+    core.debug(`Response Object: ${response.json()}`)
+    throw new Error(message)
   }
 
-  const { status, body } = await response.json()
-  return { status, body }
+  const scanResult = response.json()
+  return { status, scanResult }
 }
 
 function printSummary (scanResult) {
@@ -172,7 +173,7 @@ async function run () {
     })
 
     // Send JSON plan to DivvyCloud
-    const { status, body: scanResult } = await getScan(authToken, author, scanName, json).catch(error => {
+    const { status, scanResult } = await getScan(authToken, author, scanName, json).catch(error => {
       core.error(error.message)
     })
 
