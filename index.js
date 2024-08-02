@@ -78,8 +78,8 @@ async function getScan (authToken, author, scanName, json) {
     const message = `An error occurred while fetching scan results from DivvyCLoud: ${response.status}`
     throw Error(message)
   }
-  const { statusCode, body } = await response.json()
-  return { statusCode, body }
+  const { status, body } = response.json()
+  return { status, body }
 }
 
 function printSummary (scanResult) {
@@ -164,17 +164,17 @@ async function run () {
     })
 
     // Send JSON plan to DivvyCloud
-    const { statusCode, body: scanResult } = await getScan(authToken, author, scanName, json).catch(error => {
+    const { status, body: scanResult } = await getScan(authToken, author, scanName, json).catch(error => {
       core.error(error.message)
     })
 
-    core.info(`Status Code: ${statusCode}`)
+    core.info(`Status Code: ${status}`)
     core.startGroup('Full Scan Results')
     core.info(JSON.stringify(scanResult, null, 2))
     core.endGroup()
 
     const normalStatusCodesFromScan = [200, 202, 406]
-    if (!normalStatusCodesFromScan.includes(statusCode)) {
+    if (!normalStatusCodesFromScan.includes(status)) {
       core.error('[DivvyCloud]: Scan returned an unexpected response. Please contact the DivvyCloud Admins.')
       return
     }
@@ -183,7 +183,7 @@ async function run () {
 
     core.info('')
 
-    switch (statusCode) {
+    switch (status) {
       case 200: core.info('[DivvyCloud]: Scan completed. All checks have passed!'); break
       case 202: core.warning('[DivvyCloud]: Scan completed, but with warnings.'); break
       case 406: core.setFailed('[DivvyCloud]: Scan completed, but one or more checks failed. Please check the log for more information.')
