@@ -76,7 +76,7 @@ async function getScan (authToken, author, scanName, json) {
   const response = await fetch(request)
   if (!response.ok) {
     const message = `An error has occurred while fetching the scan results from DivvyCLoud: ${response.status}`
-    throw new Error(message)
+    throw Error(message)
   }
   const { statusCode, body } = await response.json()
   return { statusCode, body }
@@ -160,7 +160,7 @@ async function run () {
 
     // DivvyCloud Auth token
     const authToken = await getAuthToken(username, password).catch(error => {
-      core.error(`Error getting auth token: ${error.message}`)
+      core.error(error.message)
     })
 
     // Send JSON plan to DivvyCloud
