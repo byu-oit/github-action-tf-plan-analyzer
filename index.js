@@ -43,22 +43,18 @@ async function jsonFromPlan (workDir, planFileName) {
 }
 
 async function getAuthToken (username, password) {
-  try {
-    const request = new Request(divvycloudLoginUrl, {
-      method: 'POST',
-      body: { username, password }
-    })
-    const response = await fetch(request)
-    if (!response.ok) {
-      const message = `An error occurred while getting a token for DivvyCloud: ${response.status}`
-      throw Error(message)
-    }
-    const { session_id: token } = await response.json()
-    core.setSecret(token)
-    return token
-  } catch (e) {
-    throw Error('An error occurred while getting a token for DivvyCloud. Did you provide a valid username/password?')
+  const request = new Request(divvycloudLoginUrl, {
+    method: 'POST',
+    body: { username, password }
+  })
+  const response = await fetch(request)
+  if (!response.ok) {
+    const message = `An error occurred while getting a token for DivvyCloud: ${response.status}`
+    throw Error(message)
   }
+  const { session_id: token } = await response.json()
+  core.setSecret(token)
+  return token
 }
 
 async function getScan (authToken, author, scanName, json) {
@@ -163,7 +159,9 @@ async function run () {
     const json = await jsonFromPlan(workDir, planFileName)
 
     // DivvyCloud Auth token
-    const authToken = await getAuthToken(username, password)
+    const authToken = await getAuthToken(username, password).catch(error => {
+      core.error(`Error getting auth token: ${error.message}`)
+    })
 
     // Send JSON plan to DivvyCloud
     const { statusCode, body: scanResult } = await getScan(authToken, author, scanName, json)
