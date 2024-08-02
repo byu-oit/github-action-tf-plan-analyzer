@@ -43,11 +43,11 @@ async function jsonFromPlan (workDir, planFileName) {
 }
 
 async function getAuthToken (username, password) {
-  const request = new Request(divvycloudLoginUrl, {
+  const response = await fetch(divvycloudLoginUrl, {
     method: 'POST',
     body: { username, password }
   })
-  const response = await fetch(request)
+
   if (!response.ok) {
     const message = `An error occurred while getting a token for DivvyCloud: ${response.status}`
     throw Error(message)
@@ -58,7 +58,7 @@ async function getAuthToken (username, password) {
 }
 
 async function getScan (authToken, author, scanName, json) {
-  const request = new Request(divvycloudScanUrl, {
+  const response = await fetch(divvycloudScanUrl, {
     method: 'POST',
     body: {
       scan_name: scanName,
@@ -73,7 +73,7 @@ async function getScan (authToken, author, scanName, json) {
       'X-Auth-Token': authToken
     }
   })
-  const response = await fetch(request)
+
   if (!response.ok) {
     const message = `An error occurred while fetching scan results from DivvyCLoud: ${response.status}`
     throw Error(message)
