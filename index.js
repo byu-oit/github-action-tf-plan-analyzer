@@ -1,6 +1,5 @@
 const core = require('@actions/core')
 const { exec } = require('@actions/exec')
-const request = require('request-promise-native')
 const chalk = require('chalk')
 chalk.level = 1 // Chalk doesn't detect that GitHub Actions supports color. This forces chalk to use color.
 
@@ -46,12 +45,12 @@ async function jsonFromPlan (workDir, planFileName) {
 
 async function getAuthToken (username, password) {
   try {
-    const { session_id: token } = await request({
+    const request = new Request(divvycloudLoginUrl, {
       method: 'POST',
-      uri: divvycloudLoginUrl,
       body: { username, password },
       json: true
     })
+    const { session_id: token } = await fetch(request)
     core.setSecret(token)
     return token
   } catch (e) {
@@ -60,7 +59,7 @@ async function getAuthToken (username, password) {
 }
 
 async function getScan (authToken, author, scanName, json) {
-  const { statusCode, body } = await request({
+  const request = new Request(divvycloudScanUrl, {
     method: 'POST',
     uri: divvycloudScanUrl,
     body: {
@@ -79,6 +78,7 @@ async function getScan (authToken, author, scanName, json) {
       'X-Auth-Token': authToken
     }
   })
+  const { statusCode, body } = await fetch(request)
   return { statusCode, body }
 }
 
