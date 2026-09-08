@@ -5,53 +5,13 @@ on:
     branches:
       - staging
       - 'v*'
-env:
-  node_version: "20.x"
 
 jobs:
-  build: # make sure build/ci work properly
-    name: Build
+  validate:
+    name: Validate Composite Action
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.node_version }}
+      - uses: actions/checkout@v7
 
-      - name: npm install
-        run: npm ci
-
-      - name: npm run package
-        run: npm run package
-
-  audit:
-    name: Audit
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.node_version }}
-
-      - name: npm audit
-        run: npm audit --audit-level=critical
-
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.node_version }}
-
-      - name: npm install
-        run: npm ci
-
-      - name: npm run lint
-        run: npm run lint
+      - name: Check SARIF Path Normalizer Syntax
+        run: node --check scripts/rebase-sarif.js

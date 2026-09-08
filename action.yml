@@ -1,20 +1,78 @@
-name: 'Terraform Plan Analyzer'
-description: 'Analyzes Terraform Plan with DivvyCloud'
+name: 'Terraform or Tofu Analyzer'
+description: 'Analyzes Terraform or Tofu with Trivy'
 author: 'Brigham Young University'
 inputs:
   terraform-plan-file:
-    required: true
-    description: File name of the terraform plan
+    required: false
+    description: Deprecated compatibility input; ignored because Trivy scans .tf files
+    deprecationMessage: The action now scans .tf files; this input can be deleted.
   working-directory:
     required: false
-    description: Directory of the terraform configuration
+    description: Directory containing the .tf files to scan
     default: .
+  severity:
+    required: false
+    description: Comma-separated severities to display in the workflow log
+    default: HIGH,CRITICAL
+  upload-sarif:
+    required: false
+    description: Attempt to upload all Trivy findings to GitHub Code Scanning
+    default: 'true'
   divvycloud-password:
-    required: true
-    description: Password for DivvyCloud
+    required: false
+    description: Deprecated compatibility input; ignored
+    deprecationMessage: DivvyCloud scanning has been removed; this input can be deleted.
   divvycloud-username:
-    required: true
-    description: Username for DivvyCloud
+    required: false
+    description: Deprecated compatibility input; ignored
+    deprecationMessage: DivvyCloud scanning has been removed; this input can be deleted.
 runs:
-  using: 'node20'
-  main: 'dist/index.js'
+  using: composite
+  steps:
+    - name: Report Trivy Findings
+      uses: aquasecurity/trivy-action@v0.36.0
+      env:
+        TRIVY_MISCONFIG_SCANNERS: terraform
+      with:
+        scan-type: config
+        scan-ref: ${{ inputs.working-directory }}
+        hide-progress: true
+        format: table
+        severity: ${{ inputs.severity }}
+        exit-code: 0
+
+    - name: Generate Trivy Source SARIF
+      id: trivy-sarif
+      uses: aquasecurity/trivy-action@v0.36.0
+      env:
+        TRIVY_MISCONFIG_SCANNERS: terraform
+      with:
+        scan-type: config
+        scan-ref: ${{ inputs.working-directory }}
+        hide-progress: true
+        format: sarif
+        output: ${{ runner.temp }}/trivy-tf-${{ github.job }}.sarif
+        exit-code: 0
+        skip-setup-trivy: true
+
+    - name: Rebase Trivy SARIF Paths
+      shell: bash
+      env:
+        SARIF_FILE: ${{ runner.temp }}/trivy-tf-${{ github.job }}.sarif
+      run: node "$GITHUB_ACTION_PATH/scripts/rebase-sarif.js" "$SARIF_FILE" "$GITHUB_WORKSPACE"
+
+    - name: Upload Trivy Results to GitHub Code Scanning
+      id: upload-sarif
+      if: inputs.upload-sarif == 'true' && steps.trivy-sarif.outcome == 'success'
+      continue-on-error: true
+      uses: github/codeql-action/upload-sarif@v4
+      with:
+        sarif_file: ${{ runner.temp }}/trivy-tf-${{ github.job }}.sarif
+        category: trivy-tf-${{ github.job }}
+        checkout_path: ${{ github.workspace }}
+
+    - name: Report SARIF Upload Failure
+      if: steps.upload-sarif.outcome == 'failure'
+      shell: bash
+      run: |
+        echo '::warning::Trivy found results, but they could not be uploaded to GitHub Code Scanning. Grant security-events: write and enable GitHub Code Security to publish them.'
