@@ -5,87 +5,40 @@ on:
     branches:
       - staging
       - 'v*'
-env:
-  aws_account: "887069801155"
-  aws_gha_role: "gha-tf-plan-analyzer-org-gha"
 
 jobs:
-  terraform:
-    name: Terraform
+  with-code-scanning:
+    name: With GitHub Code Scanning
     runs-on: ubuntu-latest
-    env:
-      tf_version: 1.6.0
     permissions:
-      id-token: write
       contents: read
-    steps:
-    - name: Check Out
-      uses: actions/checkout@v4
-
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        role-to-assume: "arn:aws:iam::${{ env.aws_account }}:role/${{ env.aws_gha_role }}"
-        role-session-name: ${{ github.sha }}
-        aws-region: us-west-2
-
-    - name: Terraform Setup
-      uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_version: ${{ env.tf_version }}
-
-    - name: Terraform Init
-      run: terraform init
-      working-directory: __tests__
-
-    - name: Terraform Plan
-      run: terraform plan -out test-plan.tfplan
-      working-directory: __tests__
-
-    - name: Analyze Terraform Plan
-      uses: ./
-      with:
-        working-directory: ./__tests__
-        terraform-plan-file: test-plan.tfplan
-        divvycloud-username: ${{ secrets.DIVVYCLOUD_USERNAME }}
-        divvycloud-password: ${{ secrets.DIVVYCLOUD_PASSWORD}}
-
-  tofu:
-    name: OpenTofu
-    runs-on: ubuntu-latest
-    env:
-      tf_version: 1.6.0
-    permissions:
-      id-token: write
-      contents: read
+      security-events: write
     steps:
       - name: Check Out
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: "arn:aws:iam::${{ env.aws_account }}:role/${{ env.aws_gha_role }}"
-          role-session-name: ${{ github.sha }}
-          aws-region: us-west-2
-
-      - name: Tofu Setup
-        uses: opentofu/setup-opentofu@v1
-        with:
-          tofu_version: 1.6.0
-
-      - name: Tofu Init
-        run: tofu init
-        working-directory: __tests__
-
-      - name: Tofu Plan
-        run: tofu plan -out test-plan.tfplan
-        working-directory: __tests__
-
-      - name: Analyze Tofu Plan
+      - name: Analyze Terraform or Tofu
         uses: ./
         with:
           working-directory: ./__tests__
-          terraform-plan-file: test-plan.tfplan
-          divvycloud-username: ${{ secrets.DIVVYCLOUD_USERNAME }}
-          divvycloud-password: ${{ secrets.DIVVYCLOUD_PASSWORD}}
+
+      - name: Confirm High/Critical Findings Did Not Stop the Job
+        run: echo 'Terraform analysis completed without gating.'
+
+  without-code-scanning-permission:
+    name: Without GitHub Code Scanning Permission
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # Intentionally omit security-events: write to test the best-effort SARIF upload path.
+    steps:
+      - name: Check Out
+        uses: actions/checkout@v7
+
+      - name: Analyze Terraform or Tofu
+        uses: ./
+        with:
+          working-directory: ./__tests__
+
+      - name: Confirm Missing Upload Permission Did Not Stop the Job
+        run: echo 'Tofu analysis completed without gating.'
